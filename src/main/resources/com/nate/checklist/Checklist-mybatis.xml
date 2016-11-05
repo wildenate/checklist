@@ -1,0 +1,174 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.nate.checklist">
+	
+	<resultMap id="getUserMap" type="com.nate.checklist.domain.UserData">
+		<id property="userId" column="USR_ID"/>
+		<result property="userName" column="USR_NM"/>
+	</resultMap>
+	
+	<select id="getAllUsers" resultMap="getUserMap">
+		SELECT
+			USR_ID,
+			USR_NM
+		FROM
+			CHKLST.USR
+		ORDER BY USR_ID ASC
+	</select>
+	
+	<select id="getUserByUserId" resultMap="getUserMap" parameterType="java.util.Map">
+		SELECT
+			USR_ID,
+			USR_NM
+		FROM
+			CHKLST.USR
+		WHERE
+			USR.USR_ID = #{userId}
+	</select>
+	
+	<update id="updateUser" parameterType="com.nate.checklist.domain.UserData">
+		UPDATE CHKLST.USR
+		SET
+			USR_NM = #{userName}
+		WHERE
+			USR_ID = #{userId}
+	</update>
+	
+	<insert id="insertUser" parameterType="com.nate.checklist.domain.UserData" useGeneratedKeys="true" keyProperty="userId" keyColumn="USR_ID">
+		INSERT INTO CHKLST.USR
+		(
+			USR_NM
+		)
+		VALUES (
+			#{userName}
+		)
+	</insert>
+	
+	<resultMap id="getListMap" type="com.nate.checklist.domain.ListData">
+		<id property="listId" column="LST_ID"/>
+		<result property="userId" column="USR_ID"/>
+		<result property="listName" column="LST_NM"/>
+	</resultMap>
+	
+	<select id="getListsByUserId" resultMap="getListMap" parameterType="java.util.Map">
+		SELECT
+			LST_ID,
+			USR_ID,
+			LST_NM
+		FROM
+			CHKLST.LST
+		WHERE
+			USR_ID = #{userId}
+		ORDER BY LST_ID ASC
+	</select>
+	
+	<select id="getListByListId" resultMap="getListMap" parameterType="java.util.Map">
+		SELECT
+			LST_ID,
+			USR_ID,
+			LST_NM
+		FROM
+			CHKLST.LST
+		WHERE
+			LST_ID = #{listId}
+	</select>
+	
+	<update id="updateList" parameterType="com.nate.checklist.domain.ListData">
+		UPDATE CHKLST.LST
+		SET
+			LST_NM = #{listName}
+		WHERE
+			LST_ID = #{listId}
+	</update>
+	
+	<insert id="insertList" parameterType="com.nate.checklist.domain.ListData" useGeneratedKeys="true" keyProperty="listId" keyColumn="LST_ID">
+		INSERT INTO CHKLST.LST
+		(
+			USR_ID,
+			LST_NM
+		)
+		VALUES (
+			#{userId},
+			#{listName}
+		)
+	</insert>
+	
+	<select id="deleteListByListId" parameterType="java.util.Map">
+		DELETE FROM CHKLST.LST
+		WHERE
+			LST_ID = #{listId}
+	</select>
+	
+	<resultMap id="getItemMap" type="com.nate.checklist.domain.ItemData">
+		<id property="itemId" column="ITM_ID"/>
+		<result property="listId" column="LST_ID"/>
+		<result property="itemText" column="ITM_TXT"/>
+		<result property="completed" column="CMPLTD"/>
+	</resultMap>
+	
+	<select id="getItemsByListId" resultMap="getItemMap" parameterType="java.util.Map">
+		SELECT
+			ITM_ID,
+			LST_ID,
+			ITM_TXT,
+			CMPLTD
+		FROM
+			CHKLST.ITM
+		WHERE
+			LST_ID = #{listId}
+		ORDER BY ITM_ID ASC
+	</select>
+	
+	<select id="getItemByItemId" resultMap="getItemMap" parameterType="java.util.Map">
+		SELECT
+			ITM_ID,
+			LST_ID,
+			ITM_TXT,
+			CMPLTD
+		FROM
+			CHKLST.ITM
+		WHERE
+			ITM_ID = #{itemId}
+	</select>
+	
+	<update id="updateItem" parameterType="com.nate.checklist.domain.ItemData">
+		UPDATE CHKLST.ITM
+		SET
+			<if test="itemText != null">
+				ITM_TXT = #{itemText}
+			</if>
+			<if test="itemText != null and completed != null">
+				,
+			</if>
+			<if test="completed != null">
+				CMPLTD = #{completed}
+			</if>
+		WHERE
+			ITM_ID = #{itemId}
+	</update>
+	
+	<insert id="insertItem" parameterType="com.nate.checklist.domain.ItemData" useGeneratedKeys="true" keyProperty="itemId" keyColumn="ITM_ID">
+		INSERT INTO CHKLST.ITM
+		(
+			LST_ID,
+			ITM_TXT
+		)
+		VALUES (
+			#{listId},
+			#{itemText}
+		)
+	</insert>
+	
+	<select id="deleteItemByItemId" parameterType="java.util.Map">
+		DELETE FROM CHKLST.ITM
+		WHERE
+			ITM_ID = #{itemId}
+	</select>
+	
+	<select id="deleteItemsByListId" parameterType="java.util.Map">
+		DELETE FROM CHKLST.ITM
+		WHERE
+			LST_ID = #{listId}
+	</select>
+ 	
+</mapper>
